@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "esp_crt_bundle.h"
+#include "esp_heap_caps.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_random.h"
@@ -11,8 +12,11 @@
 static const char *TAG = "mtg_token_net";
 
 /* Scryfall responses for a token search page are well under this size in
- * practice; if a response is truncated, parsing simply fails safely. */
-#define HTTP_RESPONSE_BUFFER_LEN (128 * 1024)
+ * practice (a page of ~40-50 token cards is typically well under 32 KB); if
+ * a response is truncated, parsing simply fails safely. Allocated from
+ * PSRAM (falling back to internal RAM) since it's too large to keep on the
+ * stack. */
+#define HTTP_RESPONSE_BUFFER_LEN (64 * 1024)
 
 typedef struct {
     char *buffer;
@@ -44,10 +48,13 @@ bool mtg_token_fetch_random(mtg_token_t *out)
     }
 
     http_response_ctx_t ctx = {
-        .buffer = malloc(HTTP_RESPONSE_BUFFER_LEN),
+        .buffer = heap_caps_malloc(HTTP_RESPONSE_BUFFER_LEN, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT),
         .len = 0,
         .capacity = HTTP_RESPONSE_BUFFER_LEN,
     };
+    if (ctx.buffer == NULL) {
+        ctx.buffer = heap_caps_malloc(HTTP_RESPONSE_BUFFER_LEN, MALLOC_CAP_8BIT);
+    }
     if (ctx.buffer == NULL) {
         ESP_LOGE(TAG, "Failed to allocate HTTP response buffer");
         return false;

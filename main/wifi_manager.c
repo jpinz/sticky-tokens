@@ -81,6 +81,11 @@ esp_err_t wifi_manager_connect(int timeout_ms)
         return ESP_OK;
     }
 
-    ESP_LOGE(TAG, "Failed to connect to Wi-Fi");
+    if (bits & WIFI_FAILED_BIT) {
+        ESP_LOGE(TAG, "Failed to connect to Wi-Fi after %d retries", WIFI_MAX_RETRIES);
+        return ESP_FAIL;
+    }
+
+    ESP_LOGE(TAG, "Timed out waiting for Wi-Fi connection");
     return ESP_ERR_TIMEOUT;
 }

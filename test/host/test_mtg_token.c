@@ -126,6 +126,13 @@ static void test_pick_random_in_range(void)
     assert(mtg_token_pick_random(5, 5) == 0);
     assert(mtg_token_pick_random(5, 7) == 2);
 
+    /* The result must always be a valid index into a `count`-sized array,
+     * regardless of how large `random_value` is. */
+    for (unsigned long random_value = 0; random_value < 1000; random_value += 37) {
+        assert(mtg_token_pick_random(5, random_value) < 5);
+    }
+    assert(mtg_token_pick_random(5, (unsigned long)-1) < 5);
+
     printf("PASS test_pick_random_in_range\n");
 }
 
