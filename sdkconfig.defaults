@@ -1,0 +1,21 @@
+# reTerminal Sticky (ESP32-S3) hardware defaults.
+# Known-good baseline, cross-checked against the sticky-2048 reference
+# application in the Playground registry.
+
+CONFIG_IDF_TARGET="esp32s3"
+
+# 32 MB QSPI flash.
+CONFIG_ESPTOOLPY_FLASHSIZE_32MB=y
+CONFIG_PARTITION_TABLE_SINGLE_APP_LARGE=y
+
+# The reTerminal Sticky ships with 8 MB of octal PSRAM.
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_SPEED_80M=y
+CONFIG_SPIRAM_USE_MALLOC=y
+
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+CONFIG_FREERTOS_HZ=1000
+
+# mbedTLS is required to talk to the (HTTPS) Scryfall API.
+CONFIG_MBEDTLS_CERTIFICATE_BUNDLE=y
