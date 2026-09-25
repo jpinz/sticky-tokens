@@ -1,0 +1,24 @@
+menu "Sticky Tokens Configuration"
+
+    config STICKY_WIFI_SSID
+        string "Wi-Fi SSID"
+        default ""
+        help
+            Network name the device should connect to in order to reach the
+            Scryfall API.
+
+    config STICKY_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default ""
+        help
+            Leave empty for an open network.
+
+    config STICKY_REFRESH_INTERVAL_MINUTES
+        int "Minutes between token refreshes"
+        default 60
+        range 1 1440
+        help
+            How long the device deep-sleeps between fetching and displaying
+            a new random Magic: The Gathering token.
+
+endmenu
